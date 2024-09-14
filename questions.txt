@@ -1,0 +1,7 @@
+is there a specific address and port you want the sockets to be sent to or can it be sent to a temp?
+is the socket connection to the robot's server a continous connection or intermittent?
+is the rover able to turn in place? where if left wheels in reverse and right wheels forward would result in the rover turning left
+
+trash
+does the team prioritize being able to move multiple of the arm motors in unison or precise control of individual motors? 
+(typically is the operator controlling multiple motors at once or just one)
