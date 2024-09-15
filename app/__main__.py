@@ -1,3 +1,4 @@
+
 #keep in mind that we will be sending sockets out in a continous flow of data
 
 #open socket
@@ -98,34 +99,34 @@ def send_controller_input():
         pygame.quit
         quit()
 
-    # #open socket (AF_INET, AF_BLUETOOTH, idk) (SOCK_STREAM because I want a continous connection)
-    # client_socket = socket.socket( socket.AF_INET, socket.SOCK_STREAM)
-    # client_socket.connect((ADDRESS, PORT))
-
-
+    # #open socket (AF_INET, AF_BLUETOOTH, idk) (SOCK_DGRAM because I want a what real-time feedback and packet loss is okay)
+    client_socket = socket.socket( socket.AF_INET, socket.SOCK_DGRAM)
+    server_address = (ADDRESS,PORT)
     #initalize controller
     controller = pygame.joystick.Joystick(0)
     controller.init()
     print("CONTROLLER HAS BEEN CONNECTED")
 
+    STATIONARY = 128
+    last_A_command = ''
+    last_D_command = ''
 
-    #main loop
+    count  = 0
+    slow = 20
+    medium = 64
+    fast = 127
+    speeds = [slow, medium, fast]
+    speedMode  = speeds[count]
+    
+
+    #main loop (IMPORTANT THAT THE PACKETS ARE EVENT DRIVEN TO REDUCE REDUNANCY)
     running = True
     while running:
-        for event in pygame.event.get():
 
-            #quit program function
-            if event.type == quit:
-                running = False
-            elif event.type == pygame.JOYBUTTONUP and event.button == 6:
-                running = False 
-
-
-            ##VARIABLES PWM##
-        STATIONARY = 128
+        ##VARIABLES PWM##
         #WHEELS
         rightWheel1 = rightWheel2 = rightWheel3 = STATIONARY
-        leftWheel1  = leftWheel2  = leftWheel2  = STATIONARY
+        leftWheel1  = leftWheel2  = leftWheel3  = STATIONARY
 
         #ARM
         elbow       = STATIONARY
@@ -136,26 +137,14 @@ def send_controller_input():
         shoulder    = STATIONARY
 
         #TRIGGER THROTTLE
-        l2Throttle  = 0    
-        r2Throttle  = 0
+        l2Throttle  = (controller.get_axis(4)+1)/2    
+        r2Throttle  = (controller.get_axis(5)+1)/2
+        total_throttle = r2Throttle - l2Throttle
 
-        #BUTTON SPEED MODIFIERS
-        slow = 15
-        medium = 64
-        fast = 127
-        SPEED = medium
-    
-        # Get controller state (TEST)
-        # axes = [controller.get_axis(i) for i in range(controller.get_numaxes())]
-        # buttons = [controller.get_button(i) for i in range(controller.get_numbuttons())]
-
-        # print("Axes: ", axes)
-        # print("Buttons: ", buttons)
-
-        ##update wheel motor right side##
+        ##event update wheel motor right side##
         rightstick = controller.get_axis(3)
-        #check if right trigger for gas
-        if controller.get_axis(5) != -1:
+        #check if right bumper for gas
+        if controller.get_button(10) != 0:
             #giving a lil deadzone to account for stickdrift
             #forward (CW)(0 to -1)
             if rightstick < -0.05:
@@ -166,10 +155,13 @@ def send_controller_input():
                 speed = STATIONARY - (128 * rightstick)
                 rightWheel1 = rightWheel2 = rightWheel3 = speed
         
-        ##update wheel motor left side##
+
+
+
+        ##event update wheel motor left side##
         leftstick = controller.get_axis(1)
-        #check if right trigger for gas
-        if controller.get_axis(5) != -1:
+        #check if right bumper for gas
+        if controller.get_button(10) != 0:
             #giving a lil deadzone to account for stickdrift
             #forward (CCW)(0 to -1)
             if leftstick < -0.05:
@@ -180,8 +172,113 @@ def send_controller_input():
                 speed = STATIONARY + (127 * leftstick)
                 leftWheel1 = leftWheel2 = leftWheel3 = speed
 
-        print(leftWheel1, " , ", rightWheel1)
-        pygame.time.delay(1000)
+        ##event update gantry motor##
+        if controller.get_button(3) == 1:
+            if total_throttle > 0:
+                gantry = gantry + (127 * total_throttle)
+            if total_throttle < 0:
+                gantry = gantry + (128 * total_throttle)
+            #print("Gantry: ", gantry)
+
+        ##event update elbow motor##
+        if controller.get_button(0) == 1:
+            if total_throttle > 0:
+                elbow = elbow + (127 * total_throttle)
+            if total_throttle < 0:
+                elbow = elbow + (128 * total_throttle)
+            #print("Elbow: ", elbow)
+
+        ##event update shoulder motor##
+        if controller.get_button(1) == 1:
+            if total_throttle > 0:
+                shoulder = shoulder + (127 * total_throttle)
+            if total_throttle < 0:
+                shoulder = shoulder + (128 * total_throttle)
+            #print("Shoulder: ", shoulder)
+        
+        ##event update claw motor##
+        if controller.get_button(2) == 1:
+            if total_throttle > 0:
+                claw = claw + (127 * total_throttle)
+            if total_throttle < 0:
+                claw = claw + (128 * total_throttle)
+            #print("claw: ", claw)
+
+
+
+
+        ##wrist functions##
+        #  128 - 255 PWM Wristright and Wristleft -> Spins the claw clockwise
+        #  128 - 255 PWM Wristleft and 128 - 0 PWM Wristright -> claw moves up
+        # D-pad Up        - Button 11
+        # D-pad Down      - Button 12
+        # D-pad Left      - Button 13
+        # D-pad Right     - Button 14
+
+
+        if controller.get_button(11) == 1:
+            
+
+       
+
+
+
+
+        # # Get controller state (TEST)
+        # axes = [controller.get_axis(i) for i in range(controller.get_numaxes())]
+        # buttons = [controller.get_button(i) for i in range(controller.get_numbuttons())]
+        # print("Axes: ", axes)
+        # print("Buttons: ", buttons)
+
+
+        # #print wheel test
+        # print(leftWheel1, " , ", rightWheel1)
+
+        #“A_elbow_wristright_wristleft_claw_gantry_shoulder”
+        arm_command = f"A_{elbow}_{wristright}_{wristleft}_{claw}_{gantry}_{shoulder}"
+
+        #“D_rightWheel1_rightWheel2_rightWheel3_leftWheel1_leftWheel2_leftWheel3”  
+        wheels_command = f"D_{rightWheel1}_{rightWheel2}_{rightWheel3}_{leftWheel1}_{leftWheel2}_{leftWheel3}"
+        
+        ##print outgoing commands
+        #reduce redundant commands by storing last command
+        if last_A_command != arm_command:
+            print(arm_command)
+        last_A_command = arm_command
+
+        if last_D_command != wheels_command:
+            print(wheels_command)
+        last_D_command = wheels_command
+
+
+        for event in pygame.event.get():
+
+            #quit program function
+            if event.type == quit:
+                running = False
+            elif event.type == pygame.JOYBUTTONUP and event.button == 5:
+                running = False 
+
+            if event.type == pygame.JOYBUTTONUP and event.button == 8:
+                count += 1
+                if count > 2:
+                    count = 0
+                
+                print(count)
+                speedMode = speeds[count]
+                print(speedMode)
+
+            if event.type == pygame.JOYBUTTONUP and event.button == 7:
+                count -= 1
+                if count <= -1:
+                    count = 2
+                print(count)
+                speedMode = speeds[count]
+                print(speedMode) 
+
+
+        #sets the while loop to occur every N milliseconds
+        pygame.time.delay(50)
 
 
 
