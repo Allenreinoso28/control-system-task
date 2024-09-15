@@ -166,10 +166,10 @@ def send_controller_input():
                 speed = STATIONARY - (128 * rightstick)
                 rightWheel1 = rightWheel2 = rightWheel3 = speed
         
-        ##update wheel motor right side##
+        ##update wheel motor left side##
         leftstick = controller.get_axis(1)
         #check if right trigger for gas
-        if controller.get_axis(4) != -1:
+        if controller.get_axis(5) != -1:
             #giving a lil deadzone to account for stickdrift
             #forward (CCW)(0 to -1)
             if leftstick < -0.05:
@@ -183,7 +183,7 @@ def send_controller_input():
         print(leftWheel1, " , ", rightWheel1)
         pygame.time.delay(1000)
 
-        
+
 
 
 
