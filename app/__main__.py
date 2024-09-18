@@ -85,6 +85,9 @@ def send_controller_input():
     #milliseconds delay betwwen loops (50 = 20htz refresh rate)
     MILLISECONDS = 50
 
+    #testmode toggles if packets are sent or not
+    testmode = False
+
     
 
     #main loop (IMPORTANT THAT THE PACKETS ARE EVENT DRIVEN TO REDUCE REDUNANCY)
@@ -252,20 +255,22 @@ def send_controller_input():
         #reduce redundant commands by storing last command
         if last_A_command != arm_command:
             print(arm_command)
-            try:
-                client_socket.sendto(arm_command.encode(), server_address)
-            except:
-                # print("ERROR CONNECTION TO SERVER INVALID PLEASE CONFIRM ADDRESS")
-                None
+            if testmode == False:
+                try:
+                    client_socket.sendto(arm_command.encode(), server_address)
+                except:
+                    print("ERROR CONNECTION TO SERVER INVALID PLEASE CONFIRM ADDRESS")
+                
         last_A_command = arm_command
 
         if last_D_command != wheels_command:
             print(wheels_command)
-            try:
-                client_socket.sendto(wheels_command.encode(), server_address)
-            except:
-                # print("ERROR CONNECTION TO SERVER INVALID PLEASE CONFIRM ADDRESS")
-                None
+            if testmode == False:
+                try:
+                    client_socket.sendto(wheels_command.encode(), server_address)
+                except:
+                    print("ERROR CONNECTION TO SERVER INVALID PLEASE CONFIRM ADDRESS")
+                
         last_D_command = wheels_command
 
 
@@ -302,9 +307,18 @@ def send_controller_input():
                 dpad_throttle_mode = False
                 print("D-PAD THROTTLE MODE : OFF")
 
+            if event.type == pygame.JOYBUTTONUP and event.button == 6:
+                if testmode == False:
+                    testmode = True
+                    print("Test Mode: ON")
+                else:
+                    testmode = False
+                    print("Test Mode: OFF")
+
+
         #sets the while loop to occur every N milliseconds
         pygame.time.delay(MILLISECONDS)
-
+    client_socket.close()
 
 
 #start program
