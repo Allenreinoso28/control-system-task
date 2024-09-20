@@ -1,3 +1,9 @@
+# VENV
+win       - $ myenv/Scripts/activate
+mac       - $ source/bin/activate
+
+start     - $ python app
+
 # control-system-task
 Software for my 2024 Robotics team application. This python program take PS4 controller input sending out data packets to be used to control the robot.
 
