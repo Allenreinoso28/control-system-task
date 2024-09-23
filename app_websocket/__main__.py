@@ -1,12 +1,12 @@
-import socket
-import pygame
 import websockets
+import asyncio
+import pygame
 from controller import Controller
 from motors import WheelMotor, ArmMotor, WristMotors
 
 #server address vars
 ADDRESS = 'localhost'
-PORT = '12345'
+PORT = '6789'
 
 # Global Speed Setting
 speed_levels = [18, 36, 54, 72, 90, 108, 127]
@@ -27,11 +27,12 @@ def decrease_change_in_speed():
         change_in_speed = speed_levels[change_in_speed_count]
         print("Change in Speed: ", change_in_speed)
 
-def send_controller_input():
-
-    # #open socket (AF_INET, AF_BLUETOOTH, idk) (SOCK_DGRAM because I want a what real-time feedback and packet loss is okay)
-    client_socket = socket.socket( socket.AF_INET, socket.SOCK_DGRAM)
-    server_address = (ADDRESS,PORT)
+async def send_controller_input(websocket, path):
+    
+    print(f"Client connected: {path}")
+    # # #open socket (AF_INET, AF_BLUETOOTH, idk) (SOCK_DGRAM because I want a what real-time feedback and packet loss is okay)
+    # client_socket = socket.socket( socket.AF_INET, socket.SOCK_DGRAM)
+    # server_address = (ADDRESS,PORT)
 
    
 
@@ -56,13 +57,14 @@ def send_controller_input():
     MILLISECONDS = 50
 
     #testmode toggles if packets are sent or not
-    testmode = True
+    testmode = False
 
     
     #main loop (IMPORTANT THAT THE PACKETS ARE EVENT DRIVEN TO REDUCE REDUNANCY)
     running = True
     while running:
 
+        pygame.event.pump()
         ##reset all motors to 128
         right_wheels.reset()
         left_wheels.reset()
@@ -145,24 +147,13 @@ def send_controller_input():
         #reduce redundant commands by storing last command
         if last_A_command != arm_command:
             print(arm_command)
-            if testmode == False:
-                try:
-                    client_socket.sendto(arm_command.encode(), server_address)
-                except:
-                    print("ERROR CONNECTION TO SERVER INVALID PLEASE CONFIRM ADDRESS")
-                
+            await websocket.send(arm_command)      
         last_A_command = arm_command
 
         if last_D_command != wheels_command:
             print(wheels_command)
-            if testmode == False:
-                try:
-                    client_socket.sendto(wheels_command.encode(), server_address)
-                except:
-                    print("ERROR CONNECTION TO SERVER INVALID PLEASE CONFIRM ADDRESS")
-                
+            await websocket.send(wheels_command)
         last_D_command = wheels_command
-
 
         for event in pygame.event.get():
 
@@ -187,6 +178,14 @@ def send_controller_input():
                     decrease_change_in_speed()
                     print(change_in_speed)
 
+            if event.type == pygame.JOYBUTTONUP and event.button == 6:
+                if testmode == False:
+                    testmode = True
+                    print("Test Mode: ON")
+                else:
+                    testmode = False
+                    print("Test Mode: OFF")
+
             
             if event.type == pygame.JOYBUTTONUP and event.button == 9:
                 if mode == "throttle":
@@ -200,20 +199,15 @@ def send_controller_input():
                     print("THROTTLE SPEED MODE : ON")
             
 
-            if event.type == pygame.JOYBUTTONUP and event.button == 6:
-                if testmode == False:
-                    testmode = True
-                    print("Test Mode: ON")
-                else:
-                    testmode = False
-                    print("Test Mode: OFF")
-
-
         #sets the while loop to occur every N milliseconds
-        pygame.time.delay(MILLISECONDS)
-    client_socket.close()
-
+        await asyncio.sleep(MILLISECONDS / 1000.0)  # Convert milliseconds to seconds for asyncio.sleep
+    await websocket.close()
+    print(f"Client disconnected: {path}")
+    quit()
 
 #start program
 if __name__ == "__main__":
-    send_controller_input()
+    # Start WebSocket server
+    start_server = websockets.serve(send_controller_input, "localhost", 8765)
+    asyncio.get_event_loop().run_until_complete(start_server)
+    asyncio.get_event_loop().run_forever()
