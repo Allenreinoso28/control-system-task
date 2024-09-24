@@ -188,13 +188,11 @@ async def send_controller_input(websocket, path):
 
             
             if event.type == pygame.JOYBUTTONUP and event.button == 9:
-                if mode == "throttle":
                     mode = 'set'
                     print("SET SPEED MODE : ON")
             
 
             if event.type == pygame.JOYBUTTONDOWN and event.button == 9:
-                if mode == 'set':
                     mode = 'throttle'
                     print("THROTTLE SPEED MODE : ON")
             
