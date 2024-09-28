@@ -26,7 +26,6 @@ L1        - holding enables throttle control (can only use 1 of Arm or Wrist Sys
 
 # ################## Drive System ################## #
 
-R1        - holding allows for control of drive system
 R Stick   - controls right set of wheels with foward and back inputs
 L Stick   - controls left set of wheels with foward and back inputs
 
