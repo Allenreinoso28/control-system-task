@@ -1,6 +1,5 @@
 import socket
 import pygame
-import websockets
 from controller import Controller
 from motors import WheelMotor, ArmMotor, WristMotors
 
@@ -189,13 +188,11 @@ def send_controller_input():
 
             
             if event.type == pygame.JOYBUTTONUP and event.button == 9:
-                if mode == "throttle":
                     mode = 'set'
                     print("SET SPEED MODE : ON")
             
 
             if event.type == pygame.JOYBUTTONDOWN and event.button == 9:
-                if mode == 'set':
                     mode = 'throttle'
                     print("THROTTLE SPEED MODE : ON")
             
