@@ -163,32 +163,58 @@ Playstation 4 Controller (Pygame 2.x)
 
 The PlayStation 4 controller mapping has 6 axes and 16 buttons. The controller is recognized as "PS4 Controller."
 
-Left Stick:
+####Left Stick:
+
 Left -> Right: Axis 0
+
 Up -> Down: Axis 1
-Right Stick:
+
+####Right Stick:
+
 Left -> Right: Axis 2
+
 Up -> Down: Axis 3
-Left Trigger:
+
+#### Left Trigger:
+
 Out -> In: Axis 4
-Right Trigger:
+
+#### Right Trigger:
+
 Out -> In: Axis 5
-Buttons:
+
+#### Buttons:
+
 Cross Button: Button 0
+
 Circle Button: Button 1
+
 Square Button: Button 2
+
 Triangle Button: Button 3
+
 Share Button: Button 4
+
 PS Button: Button 5
+
 Options Button: Button 6
+
 L. Stick In: Button 7
+
 R. Stick In: Button 8
+
 Left Bumper: Button 9
+
 Right Bumper: Button 10
+
 D-pad Up: Button 11
+
 D-pad Down: Button 12
+
 D-pad Left: Button 13
+
 D-pad Right: Button 14
+
 Touch Pad Click: Button 15
 
 
