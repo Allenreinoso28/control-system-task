@@ -140,20 +140,27 @@ L2: Throttle select motor counterclockwise
 
 △: Holding selects gantry (R2 up / L2 down)
 
-𐤏 (Circle): Holding selects shoulder (R2 CW / L2
+(circle)𐤏: Holding selects shoulder (R2 CW / L2
 
 X: Holding selects elbow (R2 up / L2 down)
 
 □: Holding selects claw (R2 open / L2 close)
 
 ### Wrist System
+
 R2 (when holding L1): Throttle select wrist action
+
 D-pad up: Move wrist up
+
 D-pad down: Move wrist down
+
 D-pad left: Spin wrist counterclockwise
+
 D-pad right: Spin wrist clockwise
-Pygame Input Mapping
+
+### Pygame Input Mapping
 Playstation 4 Controller (Pygame 2.x)
+
 The PlayStation 4 controller mapping has 6 axes and 16 buttons. The controller is recognized as "PS4 Controller."
 
 Left Stick:
