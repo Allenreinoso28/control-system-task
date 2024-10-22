@@ -4,6 +4,8 @@ This repository contains the code and documentation for a control system task in
 
 ## Screencapture
 
+<img src="./WebAppSS.PNG" alt="Screen Cap of WebApp" width="800" />
+
 ## Project Structure
 The repository contains all project files inside the control-system-task folder. The key components include:
 
