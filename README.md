@@ -8,25 +8,30 @@ This repository contains the code and documentation for a control system task in
 
 The repository contains all project files inside the control-system-task folder. The key components include:
 
-WebSocket Command Parsing: The system receives and processes real-time commands via WebSockets to control drive and arm components.
+### WebSocket Command Parsing: 
+The system receives and processes real-time commands via WebSockets to control drive and arm components.
 
-Drive System Commands: Commands starting with D_ manage the drive system of the robot.
+### Drive System Commands: 
+Commands starting with D_ manage the drive system of the robot.
 
-Arm System Commands: Commands starting with A_ manage arm components such as the elbow, wrist, claw, gantry, and shoulder.
+### Arm System Commands: 
+Commands starting with A_ manage arm components such as the elbow, wrist, claw, gantry, and shoulder.
 
-Part-1-task (Python Program): A Python program that connects to a PS4 controller using pygame, processes controller inputs, and outputs them in the required command structure (D_ or A_) using sockets and WebSockets.
+### Part-1-task (Python Program): 
+A Python program that connects to a PS4 controller using pygame, processes controller inputs, and outputs them in the required command structure (D_ or A_) using sockets and WebSockets.
 
-Part-2-option-A (React Web App): A React-based web app that receives WebSocket data from the part-1-task and visualizes the commands using Chart.js.
+### Part-2-option-A (React Web App): 
+A React-based web app that receives WebSocket data from the part-1-task and visualizes the commands using Chart.js.
 
-# Command Structure
+## Command Structure
 
 The commands follow a structured format:
 
-Drive Commands:
+### Drive Commands:
 D_128_128_128_128_128_128
 Each segment represents a specific part of the drive system.
 
-Arm Commands:
+### Arm Commands:
 A_128_128_128_128_128_128
 Each segment represents a specific component of the arm.
 
